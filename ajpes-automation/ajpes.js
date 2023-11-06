@@ -1,7 +1,7 @@
 "use strict";
 
 const color = {
-  blue: "#34db9e",
+  blue: "#2C6DC9",
   darkBlue: "#2980b9",
   green: "#25d16a",
   darkGreen: "#0c5429",
