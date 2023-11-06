@@ -1,13 +1,13 @@
 //https://coolors.co/696d7d-f0f7ee-c4d7f2-afdedc-e9c2af
 const color = {
   //red-ish
-  requiresAttention: "#E9C2AF",
+  requiresAttention: "#c92c5b",
   //blue-ish
-  waiting: "#2C6DC9",
+  waiting: "#c92c5b",
   //green-ish
-  success: "#AFDEDC",
+  success: "#c92c5b",
   //super light green
-  used: "#CFD6CD",
+  used: "#c92c5b",
 };
 /*
 const primary = "";
