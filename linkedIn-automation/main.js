@@ -26,10 +26,6 @@ var areas = {
   },
 };
 
-//add custom CSS
-const my_css = GM_getResourceText("IMPORTED_CSS");
-GM_addStyle(my_css);
-
 //Initialize class
 let texts = new Texts();
 let flows = new Flows();
