@@ -239,7 +239,7 @@ const color = {
   //red-ish
   requiresAttention: "#E9C2AF",
   //blue-ish
-  waiting: "#2C6DC9",
+  waiting: "#C4D7F2",
   //green-ish
   success: "#AFDEDC",
   //super light green
