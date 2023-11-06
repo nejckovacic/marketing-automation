@@ -1,0 +1,46 @@
+function loadGoogleSheetsPeople() {
+  fetchAccessToken()
+    .then((accessToken) => {
+      const requestUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}/values/${cellRange}`;
+      const xhr = new XMLHttpRequest();
+      xhr.open("GET", requestUrl, true);
+      xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
+
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          const values = response.values;
+
+          for (let i = 0; i < values.length; i++) {
+            people.newPerson(
+              values[i][11], //profileID
+              values[i][1], //fullName
+              values[i][0], //firm
+              values[i][2], //role
+              values[i][3], //leadSource
+              values[i][4], //week
+              values[i][5], //location
+              values[i][6], //leadowner
+              values[i][7], //dealStatus
+              values[i][10], //lastInteraction
+              values[i][8], //nextAction
+              values[i][9], //notes
+              i + 2 //position
+            );
+          }
+          people.setUpdateTime();
+        } else {
+          console.error("Error reading rows:", xhr.status);
+        }
+      };
+
+      xhr.onerror = function () {
+        console.error("Error reading rows.");
+      };
+
+      xhr.send();
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
