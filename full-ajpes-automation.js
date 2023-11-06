@@ -98,4 +98,3 @@ function addMainButton() {
   document.body.appendChild(button);
   console.log("buttonAdded");
 }
-
