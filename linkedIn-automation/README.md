@@ -65,7 +65,6 @@ The `People` class manages information about individuals, including their intera
 - **addButtonsAndStatsForNew(minPerson, element):**
   - Adds buttons and stats for a new lead.
 
-(Include additional functions as needed)
 
 ## Google Sheets Integration
 
@@ -81,8 +80,3 @@ User rows on the "/sales/list/people/" page are color-coded based on specific co
 
 ## Examples
 
-(Provide examples of how to use key functions or demonstrate specific use cases)
-
-## License
-
-This script is licensed under the [MIT License](url). Please review the license terms before using or modifying the script.
