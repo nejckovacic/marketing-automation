@@ -634,7 +634,7 @@ function addButtonToEachRow() {
       company = {
         name: name,
         fullName: fullName,
-      };
+      }; //tuki rabm narest dejanski company from class
       console.log(company);
       addCompanyToGS(company);
     }
@@ -872,7 +872,6 @@ function fetchAccessToken() {
 
 // Create the JWT assertion for authentication
 function createJwtAssertion() {
-  console.log(serviceAccount);
   const nowInSeconds = Math.floor(Date.now() / 1000);
   const payload = {
     iss: serviceAccount.client_email,

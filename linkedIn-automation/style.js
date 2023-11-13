@@ -1,4 +1,4 @@
-const customCSS = ':root {\n  --danger: #e9c2af;\n  --primary: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\np {\n  .primary {\n    background-color: var(--primary);\n  }\n\n  .secondary {\n    background-color: var(--secondary);\n  }\n\n  .clickable:hover {\n    cursor: pointer;\n  }\n}\n';
+const customCSS = ':root {\n  --danger: #e9c2af;\n  --normal: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\nbody {\n  transition: background-color 0.15s ease-in-out;\n}\n\n.clickable {\n  filter: brightness(100%);\n}\n\n.clickable:hover {\n  cursor: pointer;\n  filter: brightness(80%);\n}\n\n.custom-button {\n  background-color: var(--normal);\n  filter: brightness(100%);\n\n  padding: 10px 20px;\n  background-color: var(--normal);\n  border: none;\n  border-radius: 5px;\n  cursor: pointer;\n  font-size: 14px;\n}\n\n.custom-button:hover {\n  filter: brightness(70%);\n}\n';
 
 function addGlobalStyle() {
   var head, style;
