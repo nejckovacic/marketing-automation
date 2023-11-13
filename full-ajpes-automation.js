@@ -25,7 +25,7 @@ function addButtonToEachRow() {
       .replace(",", "")
       .trim();
 
-    let numberCell = row.querySelector("td:nth-child(4)");
+    let numberCell = row.querySelector("td:nth-child(0)");
 
     row.classList.add("clickable");
     numberCell.addEventListener("click", function () {

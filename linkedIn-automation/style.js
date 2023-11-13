@@ -1,4 +1,4 @@
-const customCSS = 'p {\n  color: red;\n  background-color: aqua;\n}\n';
+const customCSS = ':root {\n  --danger: #e9c2af;\n  --primary: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\np {\n  .primary {\n    background-color: var(--primary);\n  }\n\n  .secondary {\n    background-color: var(--secondary);\n  }\n\n  .clickable:hover {\n    cursor: pointer;\n  }\n}\n';
 
 function addGlobalStyle() {
   var head, style;
