@@ -1,20 +1,35 @@
 :root {
   --danger: #e9c2af;
-  --primary: #c4d7f2;
+  --normal: #c4d7f2;
   --success: #afdedc;
   --secondary: #cfd6cd;
 }
 
-p {
-  .primary {
-    background-color: var(--primary);
-  }
+body {
+  transition: background-color 0.15s ease-in-out;
+}
 
-  .secondary {
-    background-color: var(--secondary);
-  }
+.clickable {
+  filter: brightness(100%);
+}
 
-  .clickable:hover {
-    cursor: pointer;
-  }
+.clickable:hover {
+  cursor: pointer;
+  filter: brightness(80%);
+}
+
+.custom-button {
+  background-color: var(--normal);
+  filter: brightness(100%);
+
+  padding: 10px 20px;
+  background-color: var(--normal);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.custom-button:hover {
+  filter: brightness(70%);
 }
