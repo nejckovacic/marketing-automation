@@ -1,50 +1,39 @@
-"use strict";
+const customCSS = ':root {\n  --danger: #e9c2af;\n  --primary: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\np {\n  .primary {\n    background-color: var(--primary);\n  }\n\n  .secondary {\n    background-color: var(--secondary);\n  }\n\n  .clickable:hover {\n    cursor: pointer;\n  }\n}\n';
 
-const color = {
-  blue: "#2C6DC9",
-  darkBlue: "#2980b9",
-  green: "#25d16a",
-  darkGreen: "#0c5429",
-};
+function addGlobalStyle() {
+  var head, style;
+  head = document.getElementsByTagName("head")[0];
+  if (!head) {
+    return;
+  }
+  style = document.createElement("style");
+  style.type = "text/css";
+  style.innerHTML = customCSS;
+  head.appendChild(style);
+}
 
-addMainButton();
-
-function parseEachRow() {
+function addButtonToEachRow() {
   const table = document.querySelector("#tableRezultati > tbody");
   const rows = table.getElementsByTagName("tr");
 
   for (const row of rows) {
-    const nameElement = row.querySelector("td:first-child a");
-    const name = nameElement.textContent
+    let nameCell = row.querySelector("td:first-child a");
+    let name = nameCell.textContent
       .replace("D.D.", "")
       .replace("d.d.", "")
       .replace("d.o.o.", "")
       .replace(",", "")
       .trim();
-    const copyButton = createCopyButton(name);
-    nameElement.insertAdjacentElement("afterend", copyButton);
+
+    let numberCell = row.querySelector("td:nth-child(4)");
+
+    row.classList.add("clickable");
+    numberCell.addEventListener("click", function () {
+      copyToClipboard(name);
+      //add new row to g-sheets
+      row.classList.add("success");
+    });
   }
-}
-
-function createCopyButton(text) {
-  const copyButton = document.createElement("button");
-  copyButton.textContent = "C";
-  copyButton.style.marginLeft = "5px";
-  copyButton.style.marginBottom = "5px";
-  copyButton.style.padding = "6px 12px";
-  copyButton.style.backgroundColor = color.blue;
-  copyButton.style.color = "#fff";
-  copyButton.style.border = "none";
-  copyButton.style.borderRadius = "5px";
-  copyButton.style.cursor = "pointer";
-  copyButton.style.fontSize = "11px";
-
-  copyButton.addEventListener("click", function () {
-    copyToClipboard(text);
-    copyButton.style.backgroundColor = color.green;
-  });
-
-  return copyButton;
 }
 
 function copyToClipboard(text) {
@@ -62,12 +51,8 @@ function copyToClipboard(text) {
 
 function addMainButton() {
   var button = document.createElement("button");
-
-  // Set the button's id and text content
   button.id = "addButtons";
   button.textContent = "Add";
-
-  // Apply styles to the button
   button.style.position = "fixed";
   button.style.bottom = "20px";
   button.style.right = "20px";
@@ -81,7 +66,7 @@ function addMainButton() {
   button.style.zIndex = "1000";
 
   button.addEventListener("click", function () {
-    parseEachRow();
+    addButtonToEachRow();
   });
 
   button.style.transition = "background-color 0.15s ease-in-out";
@@ -98,3 +83,21 @@ function addMainButton() {
   document.body.appendChild(button);
   console.log("buttonAdded");
 }
+
+/////////////
+//Pre-start declarations
+/////////////
+const color = {
+  blue: "#2C6DC9",
+  darkBlue: "#2980b9",
+  green: "#25d16a",
+  darkGreen: "#0c5429",
+};
+
+addGlobalStyle();
+
+/////////////
+//Start main
+/////////////
+
+addMainButton();

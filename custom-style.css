@@ -1,4 +1,20 @@
+:root {
+  --danger: #e9c2af;
+  --primary: #c4d7f2;
+  --success: #afdedc;
+  --secondary: #cfd6cd;
+}
+
 p {
-  color: red;
-  background-color: aqua;
+  .primary {
+    background-color: var(--primary);
+  }
+
+  .secondary {
+    background-color: var(--secondary);
+  }
+
+  .clickable:hover {
+    cursor: pointer;
+  }
 }
