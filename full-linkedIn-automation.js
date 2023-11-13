@@ -1139,6 +1139,9 @@ let people = new People();
 //initialize alerts
 var alerts = [];
 
+//Add global style
+addGlobalStyle();
+
 //initialize variables
 var activeSection;
 var secondarySection;
