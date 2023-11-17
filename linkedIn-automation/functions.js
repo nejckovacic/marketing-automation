@@ -512,7 +512,7 @@ function readChatUserInfo(element) {
 }
 
 function readMinimalInfo(element) {
-  var fullName = element.querySelector('[data-anonymize="person-name"]').innerHTML.trim();
+  var fullName = element.querySelector('[data-anonymize="person-name"]')?.innerHTML.trim();
   var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
   var id;
   if (imgUrl.includes("https:")) {
