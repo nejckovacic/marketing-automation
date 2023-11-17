@@ -781,22 +781,23 @@ function readChatUserInfo(element) {
 
 function readMinimalInfo(element) {
   var fullNameElement = element.querySelector('[data-anonymize="person-name"]');
-  if (fullNameElement != null) {
-    var fullName = fullNameElement.innerHTML?.trim();
-    var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
-    var id;
-    if (imgUrl.includes("https:")) {
-      id = imgUrl.match(/image\/(.+)\/profile/)[1];
-    } else {
-      id = null;
-    }
-
-    return {
-      id: id,
-      fullName: fullName,
-      name: fullName.split(" ")[0],
-    };
+  if (fullNameElement == null) {
+    return null;
   }
+  var fullName = fullNameElement.innerHTML?.trim();
+  var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
+  var id;
+  if (imgUrl.includes("https:")) {
+    id = imgUrl.match(/image\/(.+)\/profile/)[1];
+  } else {
+    id = null;
+  }
+
+  return {
+    id: id,
+    fullName: fullName,
+    name: fullName.split(" ")[0],
+  };
 }
 
 const customCSS = ':root {\n  --danger: #e9c2af;\n  --normal: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\nbody {\n  transition: background-color 0.15s ease-in-out;\n}\n\n.clickable {\n  filter: brightness(100%);\n}\n\n.clickable:hover {\n  cursor: pointer;\n  filter: brightness(80%);\n}\n\n.custom-button {\n  background-color: var(--normal);\n  filter: brightness(100%);\n\n  padding: 10px 20px;\n  background-color: var(--normal);\n  border: none;\n  border-radius: 5px;\n  cursor: pointer;\n  font-size: 14px;\n}\n\n.custom-button:hover {\n  filter: brightness(70%);\n}\n';
@@ -1215,7 +1216,9 @@ waitForKeyElements("#gsStatus:first", () => {
   waitForKeyElements("tr.artdeco-models-table-row", (userRowElement) => {
     //read user info from page
     var userData = readMinimalInfo(userRowElement[0]);
-
+    if (userData == null) {
+      return null;
+    }
     //checks if user exists (false disables the alert)
     var person = people.findPersonWithNameAndID(userData.fullName, userData.id, false);
 
