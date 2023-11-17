@@ -222,6 +222,8 @@ class People {
                 possibleMatches[0].role +
                 "\n" +
                 possibleMatches[0].location +
+                "\n" +
+                possibleMatches[0].position +
                 "\n\n Is this the same person?"
             )
           ) {
