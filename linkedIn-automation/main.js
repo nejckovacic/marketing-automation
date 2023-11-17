@@ -96,7 +96,9 @@ waitForKeyElements("#gsStatus:first", () => {
   waitForKeyElements("tr.artdeco-models-table-row", (userRowElement) => {
     //read user info from page
     var userData = readMinimalInfo(userRowElement[0]);
-
+    if (userData == null) {
+      return null;
+    }
     //checks if user exists (false disables the alert)
     var person = people.findPersonWithNameAndID(userData.fullName, userData.id, false);
 

@@ -524,20 +524,21 @@ function readChatUserInfo(element) {
 
 function readMinimalInfo(element) {
   var fullNameElement = element.querySelector('[data-anonymize="person-name"]');
-  if (fullNameElement != null) {
-    var fullName = fullNameElement.innerHTML?.trim();
-    var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
-    var id;
-    if (imgUrl.includes("https:")) {
-      id = imgUrl.match(/image\/(.+)\/profile/)[1];
-    } else {
-      id = null;
-    }
-
-    return {
-      id: id,
-      fullName: fullName,
-      name: fullName.split(" ")[0],
-    };
+  if (fullNameElement == null) {
+    return null;
   }
+  var fullName = fullNameElement.innerHTML?.trim();
+  var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
+  var id;
+  if (imgUrl.includes("https:")) {
+    id = imgUrl.match(/image\/(.+)\/profile/)[1];
+  } else {
+    id = null;
+  }
+
+  return {
+    id: id,
+    fullName: fullName,
+    name: fullName.split(" ")[0],
+  };
 }
