@@ -200,7 +200,10 @@ function addButtonsForExisting(person) {
         let btnText = outcome.text.split(" ").slice(1).join(" ");
         let button = document.createElement("button");
         button.id = "button_" + n; // use a unique id
-        button.style.cssText = "background-color: " + color.waiting + "; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;";
+        button.style.cssText =
+          "background-color: " +
+          color.waiting +
+          "; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;";
         button.innerHTML = btnText;
 
         button.addEventListener("click", function () {
@@ -382,7 +385,11 @@ function updateColor(person, section) {
   var statusDetails = flows.getFlowPropertiesBasedOnName(person.dealStatus);
   var timeDiff = calculateTimeDifferenceISO(person.lastInteraction);
 
-  if (statusDetails.nameShort != "Redirected" && statusDetails.nameShort != "Lead Lost" && statusDetails.nameShort != "Initial meeting done") {
+  if (
+    statusDetails.nameShort != "Redirected" &&
+    statusDetails.nameShort != "Lead Lost" &&
+    statusDetails.nameShort != "Initial meeting done"
+  ) {
     if (Number(statusDetails.waitTime) < timeDiff.hours) {
       section.style.backgroundColor = color.requiresAttention;
     } else {
@@ -457,7 +464,11 @@ function readUserInfo(element) {
     }
   }
 
-  var location = element.querySelector("._lockup-links-container_sqh8tm").querySelector("div").textContent.trim().split(", ");
+  var location = element
+    .querySelector("._lockup-links-container_sqh8tm")
+    .querySelector("div")
+    .textContent.trim()
+    .split(", ");
 
   if (imgUrl.includes("https:")) {
     id = imgUrl.match(/image\/(.+)\/profile/)[1];
@@ -512,18 +523,20 @@ function readChatUserInfo(element) {
 }
 
 function readMinimalInfo(element) {
-  var fullName = element.querySelector('[data-anonymize="person-name"]')?.innerHTML.trim();
-  var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
-  var id;
-  if (imgUrl.includes("https:")) {
-    id = imgUrl.match(/image\/(.+)\/profile/)[1];
-  } else {
-    id = null;
-  }
+  var fullName = element.querySelector('[data-anonymize="person-name"]')?.innerHTML?.trim();
+  if (fullName != null) {
+    var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
+    var id;
+    if (imgUrl.includes("https:")) {
+      id = imgUrl.match(/image\/(.+)\/profile/)[1];
+    } else {
+      id = null;
+    }
 
-  return {
-    id: id,
-    fullName: fullName,
-    name: fullName.split(" ")[0],
-  };
+    return {
+      id: id,
+      fullName: fullName,
+      name: fullName.split(" ")[0],
+    };
+  }
 }
