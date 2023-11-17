@@ -523,8 +523,9 @@ function readChatUserInfo(element) {
 }
 
 function readMinimalInfo(element) {
-  var fullName = element.querySelector('[data-anonymize="person-name"]')?.innerHTML?.trim();
-  if (fullName != null) {
+  var fullNameElement = element.querySelector('[data-anonymize="person-name"]');
+  if (fullNameElement != null) {
+    var fullName = fullNameElement.innerHTML?.trim();
     var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
     var id;
     if (imgUrl.includes("https:")) {
