@@ -464,11 +464,12 @@ function readUserInfo(element) {
     }
   }
 
-  var location = element
-    .querySelector("._lockup-links-container_sqh8tm")
-    .querySelector("div")
-    .textContent.trim()
-    .split(", ");
+  var locationElement = element.querySelector("._lockup-links-container_sqh8tm");
+
+  if (locationElement == null) {
+    return null;
+  }
+  var location = locationElement.querySelector("div").textContent.trim().split(", ");
 
   if (imgUrl.includes("https:")) {
     id = imgUrl.match(/image\/(.+)\/profile/)[1];
