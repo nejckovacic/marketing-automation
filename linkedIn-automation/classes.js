@@ -105,14 +105,62 @@ class People {
   }
 
   //for messaging
-  newPerson(firm, fullName, role, leadSource, week, location, leadOwner, dealStatus, nextAction, notes, lastInteraction, profileID, history, position, elements) {
-    let p = new Person(firm, fullName, role, leadSource, week, location, leadOwner, dealStatus, nextAction, notes, lastInteraction, profileID, history, position, elements);
+  newPerson(
+    firm,
+    fullName,
+    role,
+    leadSource,
+    week,
+    location,
+    leadOwner,
+    dealStatus,
+    nextAction,
+    notes,
+    lastInteraction,
+    profileID,
+    history,
+    position,
+    elements
+  ) {
+    let p = new Person(
+      firm,
+      fullName,
+      role,
+      leadSource,
+      week,
+      location,
+      leadOwner,
+      dealStatus,
+      nextAction,
+      notes,
+      lastInteraction,
+      profileID,
+      history,
+      position,
+      elements
+    );
     this.people.push(p);
   }
 
   //when adding people to the list
   addContact(firm, fullName, role, location, dealStatus, profileID) {
-    let p = new Person(firm, fullName, role, undefined, undefined, location, undefined, dealStatus, undefined, undefined, undefined, profileID, undefined, undefined, undefined);
+    let p = new Person(
+      firm,
+      fullName,
+      role,
+      undefined,
+      undefined,
+      location,
+      undefined,
+      dealStatus,
+      undefined,
+      undefined,
+      undefined,
+      profileID,
+      undefined,
+      undefined,
+      undefined
+    );
     this.people.push(p);
     addContactToGS(p);
     manuallyUpdateProfile();
@@ -140,7 +188,7 @@ class People {
     });
   }
 
-  findPersonWithNameAndID(fullName, id, alert = true) {
+  findPersonWithNameAndID(fullName, id, element) {
     var person;
     this.people.forEach((p) => {
       if (p.fullName == fullName && (p.profileID == id || p.profileID == "noID")) {
@@ -161,8 +209,31 @@ class People {
       });
       //check if there are not multiple people with the same name
       if (possibleMatches.length == 1) {
-        possibleMatches[0].updateID(id);
-        return possibleMatches[0];
+        element.scrollIntoView();
+        element.classList.add("notice");
+        setTimeout(() => {
+          if (
+            confirm(
+              "We found multiple contact with the same name:\nContact: " +
+                fullName +
+                "\nsame as: \n" +
+                possibleMatches[0].name +
+                "\n" +
+                possibleMatches[0].role +
+                "\n" +
+                possibleMatches[0].location +
+                "\n\n Is this the same person?"
+            )
+          ) {
+            console.log("Contact has been updated.");
+            possibleMatches[0].updateID(id);
+            element.classList.remove("notice");
+            return possibleMatches[0];
+          } else {
+            console.log("Nothing was changed.");
+            element.classList.remove("notice");
+          }
+        }, 0);
       } else if (possibleMatches.length > 1) {
         console.log("There are multiple matches for name " + fullName);
         if (alert) {

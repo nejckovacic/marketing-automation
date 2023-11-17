@@ -33,3 +33,7 @@ body {
 .custom-button:hover {
   filter: brightness(70%);
 }
+
+.notice {
+  background-color: rgb(255, 100, 80);
+}

@@ -448,12 +448,14 @@ function readUserInfo(element) {
   var fullName = element.querySelector('a[data-anonymize="person-name"]').innerHTML.trim();
   var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
   var headline = element.querySelector('[data-anonymize="headline"]').innerHTML.trim();
-  var occupation = "";
-  var firm,
+  var occupation,
+    firm,
     id = "";
 
-  occupation = document.getElementById("profile-card-section").querySelector('[data-anonymize="job-title"]').innerHTML;
-  firm = document.getElementById("profile-card-section").querySelector('[data-anonymize="company-name"]').innerHTML;
+  occupation = document
+    .getElementById("profile-card-section")
+    ?.querySelector('[data-anonymize="job-title"]')?.innerHTML;
+  firm = document.getElementById("profile-card-section")?.querySelector('[data-anonymize="company-name"]')?.innerHTML;
   if (occupation == "") {
     if (headline.search(" at ") > 0) {
       occupation = headline.split(" at ")[0].trim();
@@ -464,12 +466,13 @@ function readUserInfo(element) {
     }
   }
 
-  var locationElement = element.querySelector("._lockup-links-container_sqh8tm");
+  var location = element.querySelector("._lockup-links-container_sqh8tm");
 
-  if (locationElement == null) {
-    return null;
+  if (location != null) {
+    var location = location.querySelector("div").textContent.trim().split(", ")[location.length - 1];
+  } else {
+    location = null;
   }
-  var location = locationElement.querySelector("div").textContent.trim().split(", ");
 
   if (imgUrl.includes("https:")) {
     id = imgUrl.match(/image\/(.+)\/profile/)[1];
@@ -483,7 +486,7 @@ function readUserInfo(element) {
     name: fullName.split(" ")[0],
     occupation: occupation,
     firm: firm,
-    location: location[location.length - 1],
+    location: location,
   };
 }
 

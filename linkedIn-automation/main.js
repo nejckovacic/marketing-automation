@@ -55,7 +55,7 @@ waitForKeyElements("#gsStatus:first", () => {
   ////Detect Inbox elements (.../sales/inbox/...)
   waitForKeyElements(".conversation-list-item__link", (cardElement) => {
     var userData = readMinimalInfo(cardElement[0]);
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, cardElement[0]);
     if (person != null) {
       person.addElement({ type: "userRow", element: cardElement[0], exists: true });
       person.updateElements("userRow");
@@ -65,7 +65,7 @@ waitForKeyElements("#gsStatus:first", () => {
   ////Detect person details (.../sales/inbox/...) / (.../sales/list/people/...)
   waitForKeyElements(".conversation-insights__section:first", (insightElement) => {
     var userData = readChatUserInfo(insightElement[0]);
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, insightElement[0]);
     if (person != null) {
       person.addElement({ type: "userChatProfile", element: insightElement[0], exists: true });
       person.updateElements("userChatProfile");
@@ -79,7 +79,7 @@ waitForKeyElements("#gsStatus:first", () => {
     //read user info from page
     var userData = readUserInfo(profileElement[0]);
     //checks if user exists (false disables the alert)
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, false);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, profileElement[0]);
 
     if (person != null && !window.location.href.includes("/sales/lists/people/")) {
       person.addElement({ type: "userChatProfile", element: profileElement[0], exists: true });
@@ -100,7 +100,7 @@ waitForKeyElements("#gsStatus:first", () => {
       return null;
     }
     //checks if user exists (false disables the alert)
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, false);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, userRowElement[0]);
 
     if (person != null) {
       person.addElement({ type: "userRow", element: userRowElement[0], exists: true });

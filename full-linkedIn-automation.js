@@ -105,14 +105,62 @@ class People {
   }
 
   //for messaging
-  newPerson(firm, fullName, role, leadSource, week, location, leadOwner, dealStatus, nextAction, notes, lastInteraction, profileID, history, position, elements) {
-    let p = new Person(firm, fullName, role, leadSource, week, location, leadOwner, dealStatus, nextAction, notes, lastInteraction, profileID, history, position, elements);
+  newPerson(
+    firm,
+    fullName,
+    role,
+    leadSource,
+    week,
+    location,
+    leadOwner,
+    dealStatus,
+    nextAction,
+    notes,
+    lastInteraction,
+    profileID,
+    history,
+    position,
+    elements
+  ) {
+    let p = new Person(
+      firm,
+      fullName,
+      role,
+      leadSource,
+      week,
+      location,
+      leadOwner,
+      dealStatus,
+      nextAction,
+      notes,
+      lastInteraction,
+      profileID,
+      history,
+      position,
+      elements
+    );
     this.people.push(p);
   }
 
   //when adding people to the list
   addContact(firm, fullName, role, location, dealStatus, profileID) {
-    let p = new Person(firm, fullName, role, undefined, undefined, location, undefined, dealStatus, undefined, undefined, undefined, profileID, undefined, undefined, undefined);
+    let p = new Person(
+      firm,
+      fullName,
+      role,
+      undefined,
+      undefined,
+      location,
+      undefined,
+      dealStatus,
+      undefined,
+      undefined,
+      undefined,
+      profileID,
+      undefined,
+      undefined,
+      undefined
+    );
     this.people.push(p);
     addContactToGS(p);
     manuallyUpdateProfile();
@@ -140,7 +188,7 @@ class People {
     });
   }
 
-  findPersonWithNameAndID(fullName, id, alert = true) {
+  findPersonWithNameAndID(fullName, id, element) {
     var person;
     this.people.forEach((p) => {
       if (p.fullName == fullName && (p.profileID == id || p.profileID == "noID")) {
@@ -161,8 +209,31 @@ class People {
       });
       //check if there are not multiple people with the same name
       if (possibleMatches.length == 1) {
-        possibleMatches[0].updateID(id);
-        return possibleMatches[0];
+        element.scrollIntoView();
+        element.classList.add("notice");
+        setTimeout(() => {
+          if (
+            confirm(
+              "We found multiple contact with the same name:\nContact: " +
+                fullName +
+                "\nsame as: \n" +
+                possibleMatches[0].name +
+                "\n" +
+                possibleMatches[0].role +
+                "\n" +
+                possibleMatches[0].location +
+                "\n\n Is this the same person?"
+            )
+          ) {
+            console.log("Contact has been updated.");
+            possibleMatches[0].updateID(id);
+            element.classList.remove("notice");
+            return possibleMatches[0];
+          } else {
+            console.log("Nothing was changed.");
+            element.classList.remove("notice");
+          }
+        }, 0);
       } else if (possibleMatches.length > 1) {
         console.log("There are multiple matches for name " + fullName);
         if (alert) {
@@ -705,12 +776,14 @@ function readUserInfo(element) {
   var fullName = element.querySelector('a[data-anonymize="person-name"]').innerHTML.trim();
   var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
   var headline = element.querySelector('[data-anonymize="headline"]').innerHTML.trim();
-  var occupation = "";
-  var firm,
+  var occupation,
+    firm,
     id = "";
 
-  occupation = document.getElementById("profile-card-section").querySelector('[data-anonymize="job-title"]').innerHTML;
-  firm = document.getElementById("profile-card-section").querySelector('[data-anonymize="company-name"]').innerHTML;
+  occupation = document
+    .getElementById("profile-card-section")
+    ?.querySelector('[data-anonymize="job-title"]')?.innerHTML;
+  firm = document.getElementById("profile-card-section")?.querySelector('[data-anonymize="company-name"]')?.innerHTML;
   if (occupation == "") {
     if (headline.search(" at ") > 0) {
       occupation = headline.split(" at ")[0].trim();
@@ -721,11 +794,13 @@ function readUserInfo(element) {
     }
   }
 
-  var location = element
-    .querySelector("._lockup-links-container_sqh8tm")
-    .querySelector("div")
-    .textContent.trim()
-    .split(", ");
+  var location = element.querySelector("._lockup-links-container_sqh8tm");
+
+  if (location != null) {
+    var location = location.querySelector("div").textContent.trim().split(", ")[location.length - 1];
+  } else {
+    location = null;
+  }
 
   if (imgUrl.includes("https:")) {
     id = imgUrl.match(/image\/(.+)\/profile/)[1];
@@ -739,7 +814,7 @@ function readUserInfo(element) {
     name: fullName.split(" ")[0],
     occupation: occupation,
     firm: firm,
-    location: location[location.length - 1],
+    location: location,
   };
 }
 
@@ -800,7 +875,7 @@ function readMinimalInfo(element) {
   };
 }
 
-const customCSS = ':root {\n  --danger: #e9c2af;\n  --normal: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\nbody {\n  transition: background-color 0.15s ease-in-out;\n}\n\n.clickable {\n  filter: brightness(100%);\n}\n\n.clickable:hover {\n  cursor: pointer;\n  filter: brightness(80%);\n}\n\n.custom-button {\n  background-color: var(--normal);\n  filter: brightness(100%);\n\n  padding: 10px 20px;\n  background-color: var(--normal);\n  border: none;\n  border-radius: 5px;\n  cursor: pointer;\n  font-size: 14px;\n}\n\n.custom-button:hover {\n  filter: brightness(70%);\n}\n';
+const customCSS = ':root {\n  --danger: #e9c2af;\n  --normal: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\nbody {\n  transition: background-color 0.15s ease-in-out;\n}\n\n.clickable {\n  filter: brightness(100%);\n}\n\n.clickable:hover {\n  cursor: pointer;\n  filter: brightness(80%);\n}\n\n.custom-button {\n  background-color: var(--normal);\n  filter: brightness(100%);\n\n  padding: 10px 20px;\n  background-color: var(--normal);\n  border: none;\n  border-radius: 5px;\n  cursor: pointer;\n  font-size: 14px;\n}\n\n.custom-button:hover {\n  filter: brightness(70%);\n}\n\n.notice {\n  background-color: rgb(255, 100, 80);\n}\n';
 
 function addGlobalStyle() {
   var head, style;
@@ -1175,7 +1250,7 @@ waitForKeyElements("#gsStatus:first", () => {
   ////Detect Inbox elements (.../sales/inbox/...)
   waitForKeyElements(".conversation-list-item__link", (cardElement) => {
     var userData = readMinimalInfo(cardElement[0]);
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, cardElement[0]);
     if (person != null) {
       person.addElement({ type: "userRow", element: cardElement[0], exists: true });
       person.updateElements("userRow");
@@ -1185,7 +1260,7 @@ waitForKeyElements("#gsStatus:first", () => {
   ////Detect person details (.../sales/inbox/...) / (.../sales/list/people/...)
   waitForKeyElements(".conversation-insights__section:first", (insightElement) => {
     var userData = readChatUserInfo(insightElement[0]);
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, insightElement[0]);
     if (person != null) {
       person.addElement({ type: "userChatProfile", element: insightElement[0], exists: true });
       person.updateElements("userChatProfile");
@@ -1199,7 +1274,7 @@ waitForKeyElements("#gsStatus:first", () => {
     //read user info from page
     var userData = readUserInfo(profileElement[0]);
     //checks if user exists (false disables the alert)
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, false);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, profileElement[0]);
 
     if (person != null && !window.location.href.includes("/sales/lists/people/")) {
       person.addElement({ type: "userChatProfile", element: profileElement[0], exists: true });
@@ -1220,7 +1295,7 @@ waitForKeyElements("#gsStatus:first", () => {
       return null;
     }
     //checks if user exists (false disables the alert)
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, false);
+    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, userRowElement[0]);
 
     if (person != null) {
       person.addElement({ type: "userRow", element: userRowElement[0], exists: true });
