@@ -1,3 +1,4 @@
+"use strict";
 /////////////
 //Pre-start declarations
 /////////////
@@ -21,5 +22,4 @@ loadGoogleSheetsData();
 /////////////
 //Start main
 /////////////
-
 addMainButton();

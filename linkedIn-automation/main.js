@@ -78,7 +78,6 @@ waitForKeyElements("#gsStatus:first", () => {
   waitForKeyElements("section._header_sqh8tm:first", (profileElement) => {
     //read user info from page
     var userData = readUserInfo(profileElement[0]);
-    //checks if user exists (false disables the alert)
     var person = people.findPersonWithNameAndID(userData.fullName, userData.id, profileElement[0]);
 
     if (person != null && !window.location.href.includes("/sales/lists/people/")) {

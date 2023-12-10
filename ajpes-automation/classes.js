@@ -70,12 +70,14 @@ class Companies {
   ) {
     let c = new Company(name, fullName, contacted, area, country, numberOfEmployees, money, source);
     this.companies.push(c);
+
+    return c
   }
 
-  findPersonWithName(fullName) {
+  findCompany(foundFullName, foundName) {
     var company;
     this.companies.forEach((c) => {
-      if (c.fullName == fullName) {
+      if (c.fullName == foundFullName || c.name == foundName) {
         company = c;
       }
     });

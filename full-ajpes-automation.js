@@ -70,12 +70,14 @@ class Companies {
   ) {
     let c = new Company(name, fullName, contacted, area, country, numberOfEmployees, money, source);
     this.companies.push(c);
+
+    return c
   }
 
-  findPersonWithName(fullName) {
+  findCompany(foundFullName, foundName) {
     var company;
     this.companies.forEach((c) => {
-      if (c.fullName == fullName) {
+      if (c.fullName == foundFullName || c.name == foundName) {
         company = c;
       }
     });
@@ -130,348 +132,6 @@ function calculateTimeDifferenceISO(pastTimeIso, addHours = 0) {
   };
 }
 
-function addStatsForExisting(person, element, addBtns = true) {
-  var statusDetails = flows.getFlowPropertiesBasedOnName(person.dealStatus);
-  var waitInteraction = false;
-
-  //calculate the time of first interaction and next planned interaction
-  var difLastInt = calculateTimeDifferenceISO(person.lastInteraction);
-  var difNextInt = calculateTimeDifferenceISO(person.lastInteraction, statusDetails.waitTimeH);
-
-  //checks if there is already a status section and if not creates a new one
-  var statusSection;
-  if (!element.parentElement.innerHTML.includes('id="statusSection"')) {
-    statusSection = document.createElement("section");
-    statusSection.setAttribute("id", "statusSection");
-    element.after(statusSection);
-  } else {
-    statusSection = element.parentElement.querySelector("#statusSection");
-  }
-  //Adding general status information of the person
-  statusSection.innerHTML =
-    '<div style="margin-top: 5px; padding:8px">' +
-    '   <div id="currentUserStatus" style="width:65%; display: inline-block;">' +
-    '      <button id="currentUserStatusBtn" style="text-align: left; font-weight: bold; font-size:14px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;"> ▽ ' +
-    person.dealStatus +
-    "</button>" +
-    "   </div>" +
-    '   <p id="position" style="width:20%; display: inline-block; text-align: right; color:#696D7D;"><a href="https://docs.google.com/spreadsheets/d/1GaHllBY0F7SHE-UKJokuVBhHpJHb2g_FNv6PEbEkihM/edit#gid=883336729" target="_blank">' +
-    person.position +
-    "</a></p>" +
-    '   <p id="lastInteraction" style="text-align: center; color:#696D7D;">Last: ' +
-    difLastInt.split.days +
-    "d, " +
-    difLastInt.split.hours +
-    "h and " +
-    difLastInt.split.minutes +
-    "m ago</p>" +
-    '   <p id="nextInteraction" style="display: none; text-align: center; color:#696D7D;">Planned: ' +
-    difNextInt.split.days +
-    "d, " +
-    difNextInt.split.hours +
-    "h and " +
-    difNextInt.split.minutes +
-    "m</p>" +
-    '   <p contentEditable="true" id="userNotes" style="color:#696D7D;">' +
-    person.notes +
-    "</p>" +
-    '   <p contentEditable="true" id="nextAction" style="color:#696D7D;">' +
-    person.nextAction +
-    "</p>" +
-    '   <button id="updateDesc" style="display: none; background-color: #AFDEDC; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 12px 2px 0 0;">Update</button>' +
-    "</div>" +
-    '<hr style="margin:2px">' +
-    (addBtns ? '<div id="buttonsArea" style="text-align:center"></div>' : "") +
-    '<hr style="margin:2px">';
-
-  //check if second timer should be display (not displayed if is = 00:00:00)
-  if (waitInteraction) {
-    document.getElementById("nextInteraction").style.display = "block";
-  }
-
-  if (statusDetails.hasOwnProperty("waitTimeH")) {
-    document.getElementById("lastInteraction").style.display = "block";
-  }
-
-  ///Adding the button to update the description
-  document.getElementById("userNotes").addEventListener("input", function () {
-    document.getElementById("updateDesc").style.display = "block";
-  });
-  document.getElementById("nextAction").addEventListener("input", function () {
-    document.getElementById("updateDesc").style.display = "block";
-  });
-  document.getElementById("updateDesc").addEventListener("click", function () {
-    person.updateDesc(document.getElementById("userNotes").innerHTML, document.getElementById("nextAction").innerHTML);
-  });
-
-  //Adding dropdown menu
-  var userStatusChange = document.getElementById("currentUserStatus");
-  var userStatusChangeBtn = document.getElementById("currentUserStatusBtn");
-  userStatusChange.addEventListener("mouseenter", () => {
-    userStatusChangeBtn.style.backgroundColor = color.waiting;
-    dropdownToggle(true, person);
-  });
-
-  userStatusChange.addEventListener("mouseleave", () => {
-    userStatusChangeBtn.style.backgroundColor = "";
-    dropdownToggle(false, person);
-  });
-}
-
-function dropdownToggle(display, person) {
-  var button = document.getElementById("currentUserStatus");
-  var dropdown = document.getElementById("statusesDropdown");
-
-  if (dropdown != null) {
-    if (display) {
-      dropdown.style.display = "block";
-    } else {
-      dropdown.style.display = "none";
-    }
-  } else {
-    if (display) {
-      dropdown = document.createElement("div");
-      dropdown.style.backgroundColor = "rgba(188, 188, 188, 0.9)";
-      dropdown.style.borderRadius = "5px";
-      dropdown.style.display = "block";
-      dropdown.style.textAlign = "center";
-      //dropdown.style.width = "100%";
-      dropdown.style.zIndex = "9999";
-      dropdown.style.position = "absolute";
-      dropdown.setAttribute("id", "statusesDropdown");
-      const allFlows = flows.getAllFlows();
-      allFlows.forEach((flow) => {
-        var btn = document.createElement("button");
-        btn.setAttribute("id", "changeStatusTo" + flow.id);
-        btn.style.backgroundColor = color.waiting;
-        btn.style.fontWeight = "bold";
-        btn.style.fontSize = "12px";
-        btn.style.borderRadius = "6px";
-        btn.style.borderStyle = "none";
-        btn.style.padding = "6px 10px";
-        btn.style.margin = "3px 2px";
-        btn.innerHTML = flow.name;
-        dropdown.append(btn);
-
-        btn.addEventListener("mouseenter", () => {
-          btn.style.backgroundColor = "";
-        });
-
-        btn.addEventListener("mouseleave", () => {
-          btn.style.backgroundColor = color.waiting;
-        });
-
-        btn.addEventListener("click", () => {
-          person.updateStatus(flow.name);
-          manuallyColorUserRows();
-          manuallyUpdateProfile();
-        });
-      });
-      button.append(dropdown);
-    }
-  }
-}
-
-function addButtonsForExisting(person) {
-  var statusDetails = flows.getFlowPropertiesBasedOnName(person.dealStatus);
-
-  //checks which language should be selected
-  var language = "eng";
-  if (person.location.includes("Slovenia") || person.location.includes("Slovenija")) {
-    language = "slo";
-  }
-
-  //creates buttons to send messages
-  var buttonsArea = document.getElementById("buttonsArea");
-  if (statusDetails.hasOwnProperty("outcomes")) {
-    buttonsArea.innerHTML = "";
-    for (let n = 0; n < statusDetails.outcomes.length; n++) {
-      const outcome = statusDetails.outcomes[n];
-      if (outcome.target != null) {
-        let btnText = outcome.text.split(" ").slice(1).join(" ");
-        let button = document.createElement("button");
-        button.id = "button_" + n; // use a unique id
-        button.style.cssText =
-          "background-color: " +
-          color.waiting +
-          "; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;";
-        button.innerHTML = btnText;
-
-        button.addEventListener("click", function () {
-          generateMessage(language, outcome, person);
-        });
-        buttonsArea.appendChild(button);
-      }
-    }
-  } else {
-    //reactivate old chat button
-    buttonsArea.innerHTML =
-      '<button id="reactivated" style="background-color: ' +
-      color.waiting +
-      '; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;">Chatting</button>';
-    document.getElementById("reactivated").addEventListener("click", function () {
-      generateMessage(language, flows.getFlowPropertiesBasedOnNameShort("Chatting"), person);
-    });
-  }
-}
-
-function addButtonsAndStatsForNewChat(personInfo, element) {
-  //checks if there is already a status section and if not creates a new one
-  var statusSection;
-  if (!element.parentElement.innerHTML.includes('id="statusSection"')) {
-    statusSection = document.createElement("section");
-    statusSection.setAttribute("id", "statusSection");
-    element.after(statusSection);
-  } else {
-    statusSection = element.parentElement.querySelector("#statusSection");
-  }
-
-  statusSection.innerHTML =
-    '<hr style="margin:2px">' +
-    '<div id="buttonsArea" style="text-align:center">' +
-    //connect button
-    '<button id="addPerson" style="background-color: ' +
-    color.success +
-    '; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;">Add person</button>' +
-    "</div>" +
-    '<hr style="margin:2px">';
-
-  document.getElementById("addPerson").addEventListener("click", function () {
-    people.addContact(
-      personInfo.firm,
-      personInfo.fullName,
-      personInfo.occupation,
-      personInfo.location,
-      flows.getFlowPropertiesBasedOnNameShort("Chatting").name,
-      personInfo.profileID
-    );
-  });
-}
-
-function addButtonsAndStatsForNew(minPerson, element) {
-  //checks if there is already a status section and if not creates a new one
-  var statusSection;
-  if (!element.parentElement.innerHTML.includes('id="statusSection"')) {
-    statusSection = document.createElement("section");
-    statusSection.setAttribute("id", "statusSection");
-    element.after(statusSection);
-  } else {
-    statusSection = element.parentElement.querySelector("#statusSection");
-  }
-
-  //Adding general status information of the person
-  statusSection.innerHTML =
-    '<hr style="margin:2px">' +
-    '<div id="buttonsArea" style="text-align:center">' +
-    //connect button
-    '<button id="connectBtn" style="background-color: ' +
-    color.success +
-    '; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;">Connect</button>' +
-    //connect knowledgeable button
-    "</div>" +
-    '<hr style="margin:2px">';
-
-  document.getElementById("connectBtn").addEventListener("click", function () {
-    tryConnecting(minPerson, element);
-  });
-}
-
-function tryConnecting(personInfo, element) {
-  //events
-  var clickEvent = new Event("click", {
-    bubbles: true,
-    cancelable: true,
-  });
-  var inputEvent = new Event("input", {
-    bubbles: true,
-    cancelable: true,
-  });
-
-  //checks which language should be selected
-  var language = "eng";
-  if (personInfo.location.includes("Slovenia") || personInfo.location.includes("Slovenija")) {
-    language = "slo";
-  }
-
-  //clicks on ... menu button
-  element.querySelector('[aria-label="Open actions overflow menu"]').dispatchEvent(clickEvent);
-
-  //waits for menu to show
-  waitForKeyElements('button:has(> div:contains("Connect")):first', (conButton) => {
-    conButton[0].dispatchEvent(clickEvent);
-    waitForKeyElements("#connect-cta-form__invitation:first", (textAreaElement) => {
-      //create button to change language
-      if (document.getElementById("langChangeBtn") == null) {
-        const langChange = document.createElement("div");
-        langChange.innerHTML =
-          '<button id="langChangeBtn" style="background-color: ' +
-          color.waiting +
-          '; font-size:12px; border-radius: 6px; border-style: none; padding: 6px 10px; margin: 3px 2px;">Change language</button>';
-        document.getElementById("connect-cta-form__invitation").after(langChange);
-        document.getElementById("langChangeBtn").addEventListener("click", function () {
-          if (language == "eng") {
-            language = "slo";
-          } else {
-            language = "eng";
-          }
-          var textArea = textAreaElement[0];
-          var template = texts.getText("1 Request");
-          var message = template.fullTexts[language].content.replace("[name]", personInfo.name);
-          textArea.focus();
-          textArea.value = message;
-          textArea.dispatchEvent(inputEvent);
-        });
-      }
-
-      var textArea = textAreaElement[0];
-      var template;
-      template = texts.getText("1 Request");
-      var message = template.fullTexts[language].content.replace("[name]", personInfo.name);
-      textArea.focus();
-      textArea.value = message;
-      textArea.dispatchEvent(inputEvent);
-    });
-  });
-  people.addContact(
-    personInfo.firm,
-    personInfo.fullName,
-    personInfo.occupation,
-    personInfo.location,
-    flows.getFlowPropertiesBasedOnNameShort("Connection request sent").name,
-    personInfo.profileID
-  );
-}
-
-function generateMessage(language, outcome, person) {
-  var targetArea = document.getElementsByName("message")[0];
-  var subjectArea = document.querySelector('[placeholder="Subject (required)"]');
-  var text = texts.getText(outcome.text);
-  if (text.fullTexts[language].content != null) {
-    var template = text.fullTexts[language].content;
-    console.log(template);
-    var message = template.replace("[name]", person.name);
-    console.log(message);
-    //input event
-    var inputEvent = new Event("input", {
-      bubbles: true,
-      cancelable: true,
-    });
-    if (subjectArea != null) {
-      var subject = text.fullTexts[language].subject;
-      subjectArea.focus();
-      subjectArea.value = subject;
-      subjectArea.dispatchEvent(inputEvent);
-    }
-    targetArea.focus();
-    targetArea.value = message;
-    targetArea.dispatchEvent(inputEvent);
-  } else {
-    console.log("just status update");
-  }
-  console.log("start update");
-  person.updateStatus(outcome.target);
-}
-
 function updateColor(person, section) {
   var statusDetails = flows.getFlowPropertiesBasedOnName(person.dealStatus);
   var timeDiff = calculateTimeDifferenceISO(person.lastInteraction);
@@ -510,145 +170,58 @@ function manuallyColorUserRows() {
   });
 }
 
-function manuallyUpdateProfile() {
-  var allProfiles = document.querySelectorAll("section._header_sqh8tm");
-  if (allProfiles == null) {
-    allProfiles = document.querySelectorAll(".conversation-insights__section:first");
-  }
-  allProfiles.forEach((profile) => {
-    //read user info from page
-    var userData = readUserInfo(profile);
-
-    //checks if user exists (false disables the alert)
-    var person = people.findPersonWithNameAndID(userData.fullName, userData.id, false);
-
-    if (person != null && !window.location.href.includes("/sales/lists/people/")) {
-      person.addElement({ type: "userChatProfile", element: profile, exists: true });
-      person.updateElements("userChatProfile");
-    } else if (person != null) {
-      person.addElement({ type: "userProfile", element: profile, exists: true });
-      person.updateElements("userProfile");
-    } else {
-      addButtonsAndStatsForNew(userData, profile);
-    }
-  });
-}
-
-////////////////add users///////////////
-function readUserInfo(element) {
-  var fullName = element.querySelector('a[data-anonymize="person-name"]').innerHTML.trim();
-  var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
-  var headline = element.querySelector('[data-anonymize="headline"]').innerHTML.trim();
-  var occupation = "";
-  var firm,
-    id = "";
-
-  occupation = document.getElementById("profile-card-section").querySelector('[data-anonymize="job-title"]').innerHTML;
-  firm = document.getElementById("profile-card-section").querySelector('[data-anonymize="company-name"]').innerHTML;
-  if (occupation == "") {
-    if (headline.search(" at ") > 0) {
-      occupation = headline.split(" at ")[0].trim();
-      firm = headline.split(" at ")[1].trim();
-    } else if (headline.search(" @ ") > 0) {
-      occupation = headline.split(" @ ")[0].trim();
-      firm = headline.split(" @ ")[1].trim();
-    }
-  }
-
-  var location = element
-    .querySelector("._lockup-links-container_sqh8tm")
-    .querySelector("div")
-    .textContent.trim()
-    .split(", ");
-
-  if (imgUrl.includes("https:")) {
-    id = imgUrl.match(/image\/(.+)\/profile/)[1];
-  } else {
-    id = null;
-  }
-
-  return {
-    id: id,
-    fullName: fullName,
-    name: fullName.split(" ")[0],
-    occupation: occupation,
-    firm: firm,
-    location: location[location.length - 1],
-  };
-}
-
-function readChatUserInfo(element) {
-  var fullName = element.querySelector('span[data-anonymize="person-name"]').innerHTML.trim();
-  var imgUrl = element.querySelector('img[data-anonymize="headshot-photo"]').src;
-  var headline = element.querySelector('[data-anonymize="headline"]').innerHTML.trim();
-  var occupation = "";
-  var firm,
-    id = "";
-
-  if (occupation == "") {
-    if (headline.search(" at ") > 0) {
-      occupation = headline.split(" at ")[0].trim();
-      firm = headline.split(" at ")[1].trim();
-    } else if (headline.search(" @ ") > 0) {
-      occupation = headline.split(" @ ")[0].trim();
-      firm = headline.split(" @ ")[1].trim();
-    }
-  }
-
-  var location = element.querySelector('[data-anonymize="location"]').innerHTML.trim().split(", ");
-
-  if (imgUrl.includes("https:")) {
-    id = imgUrl.match(/image\/(.+)\/profile/)[1];
-  } else {
-    id = null;
-  }
-
-  return {
-    id: id,
-    fullName: fullName,
-    name: fullName.split(" ")[0],
-    occupation: occupation,
-    firm: firm,
-    location: location[location.length - 1],
-  };
-}
-
 ///////////////////////////////////////////////
 
 function addButtonToEachRow() {
   const table = document.querySelector("#tableRezultati > tbody");
+  if (!table) return;
+
   const rows = table.getElementsByTagName("tr");
 
   for (const row of rows) {
     let nameElement = row.querySelector("td:first-child a");
-    let fullName = nameElement.textContent;
-    let name = fullName.replace("D.D.", "").replace("d.d.", "").replace("d.o.o.", "").replace(",", "").trim();
+    if (!nameElement) continue;
 
-    var company = companies.findPersonWithName(fullName);
-    if (company != null) {
-      console.log(company);
+    let fullName = nameElement.textContent.trim();
+    let name = fullName
+      .replace(/D\.D\.|d\.d\.|d\.o\.o\./g, "")
+      .replace(",", "")
+      .trim();
+
+    let company = companies.findCompany(fullName, name);
+    if (company) {
       row.classList.add("warning");
-      //ce je ze kontaktirana pol druga barva TO DO
     } else {
       row.classList.add("info");
-      company = {
-        name: name,
-        fullName: fullName,
-      }; //tuki rabm narest dejanski company from class
-      console.log(company);
-      addCompanyToGS(company);
     }
 
     let nameCell = row.querySelector("td:nth-child(1)");
+    if (!nameCell) continue;
+
     nameCell.classList.add("clickable");
-    nameCell.addEventListener("click", function () {
-      copyToClipboard(name);
-      try {
-        row.classList.remove("warning");
-        row.classList.remove("info");
-      } catch (e) {}
-      row.classList.add("success");
-    });
+    nameCell.addEventListener("click", () => handleRowClick(row, name, fullName));
+  }
+}
+
+function handleRowClick(row, name, fullName) {
+  copyToClipboard(name);
+  row.classList.remove("warning", "info");
+  row.classList.add("success");
+
+  let company = companies.findCompany(fullName) || companies.findCompany(name);
+  if (!company) {
+    company = companies.newCompany(
+      name,
+      fullName,
+      true,
+      "",
+      "Slovenia",
+      row.querySelector("td:nth-child(3)").textContent,
+      row.querySelector("td:nth-child(2)").textContent,
+      "AJPES"
+    );
+    console.log("Adding company to Google Sheets", company);
+    addCompanyToGS(company);
   }
 }
 
@@ -670,21 +243,15 @@ function addMainButton() {
   button.id = "addButtons";
   button.textContent = "Add";
   button.classList.add("custom-button");
-  button.style.position = "fixed";
-  button.style.bottom = "20px";
-  button.style.right = "20px";
-  button.style.zIndex = "1000";
-
+  button.classList.add("bottom-left-btn");
   button.addEventListener("click", function () {
     addButtonToEachRow();
   });
-
-  // Append the button to the body of the document
   document.body.appendChild(button);
   console.log("buttonAdded");
 }
 
-const customCSS = ':root {\n  --danger: #e9c2af;\n  --normal: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\nbody {\n  transition: background-color 0.15s ease-in-out;\n}\n\n.clickable {\n  filter: brightness(100%);\n}\n\n.clickable:hover {\n  cursor: pointer;\n  filter: brightness(80%);\n}\n\n.custom-button {\n  background-color: var(--normal);\n  filter: brightness(100%);\n\n  padding: 10px 20px;\n  background-color: var(--normal);\n  border: none;\n  border-radius: 5px;\n  cursor: pointer;\n  font-size: 14px;\n}\n\n.custom-button:hover {\n  filter: brightness(70%);\n}\n\n.notice {\n  background-color: rgb(255, 100, 80);\n}\n';
+const customCSS = ':root {\n  --danger: #e9c2af;\n  --normal: #c4d7f2;\n  --success: #afdedc;\n  --secondary: #cfd6cd;\n}\n\nbody {\n  transition: background-color 0.15s ease-in-out;\n}\n\n.clickable {\n  filter: brightness(100%);\n}\n\n.clickable:hover {\n  cursor: pointer;\n  filter: brightness(80%);\n}\n\n.custom-button {\n  background-color: var(--normal);\n  filter: brightness(100%);\n\n  padding: 10px 20px;\n  background-color: var(--normal);\n  border: none;\n  border-radius: 5px;\n  cursor: pointer;\n  font-size: 14px;\n}\n\n.bottom-left-btn {\n  position: fixed;\n  bottom: 20px;\n  right: 20px;\n  z-index: 1000;\n}\n\n.custom-button:hover {\n  filter: brightness(70%);\n}\n\n.notice {\n  background-color: rgb(255, 100, 80);\n}\n';
 
 function addGlobalStyle() {
   var head, style;
@@ -710,7 +277,6 @@ function loadGoogleSheetsData() {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.responseText);
           const values = response.values;
-          console.log(values);
           parseValues(values);
         } else {
           console.error("Error reading rows:", xhr.status);
@@ -732,7 +298,7 @@ function parseValues(values) {
   for (let i = 0; i < values.length; i++) {
     companies.newCompany(
       values[i][0], //firm
-      values[i][1], //firm
+      values[i][1], //firm names
       values[i][2], //contacted
       values[i][3], //area
       values[i][4], //country
@@ -744,58 +310,13 @@ function parseValues(values) {
   }
 }
 
-function updateCompanyOnGS(company) {
-  fetchAccessToken()
-    .then((accessToken) => {
-      var targetRange = gsCompanies.sheetName + "!A" + company.position + ":H" + company.position;
-      const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${gsCompanies.spreadsheetId}/values/${targetRange}?valueInputOption=USER_ENTERED`;
-
-      const data = {
-        values: [
-          [
-            company.name,
-            company.fullName,
-            company.contacted,
-            company.area,
-            company.country,
-            company.numberOfEmployees,
-            company.money,
-            company.source,
-          ],
-        ],
-      };
-
-      const xhr = new XMLHttpRequest();
-      xhr.open("PUT", updateUrl, true);
-      xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
-      xhr.setRequestHeader("Content-Type", "application/json");
-
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          console.log("Cells updated successfully!");
-        } else {
-          console.error("Error updating cell value:", xhr.status);
-        }
-      };
-
-      xhr.onerror = function () {
-        console.error("Error updating cell value.");
-      };
-
-      xhr.send(JSON.stringify(data));
-    })
-    .catch((error) => {
-      console.error(error);
-    });
-}
-
 function addCompanyToGS(company) {
   console.log(company);
   fetchAccessToken().then((accessToken) => {
     const appendUrl = `https://sheets.googleapis.com/v4/spreadsheets/${gsCompanies.spreadsheetId}/values/${gsCompanies.sheetName}!A1:append?valueInputOption=USER_ENTERED`;
 
     const data = {
-      values: [[company.name, company.fullName, "FALSE", "", "Slovenia", "", "", "AJPES"]],
+      values: [[company.name, company.fullName, company.contacted, "", "Slovenia", company.numberOfEmployees, company.money, "AJPES"]],
     };
 
     const xhr = new XMLHttpRequest();
@@ -825,9 +346,9 @@ function configureGoogleAuthVars() {
   serviceAccount = {
     type: "service_account",
     project_id: "linkedinautomation-393307",
-    private_key_id: "ffb201069683175b94cc9e0ddb37ddf2f4cc0b4f",
+    private_key_id: "c4f73d14c8580439b963d4ac9622efd5ccddc511",
     private_key:
-      "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCgVUQXBmsGwK1j\n7bQwDS+y1DLbo53isnQIiGPPVR4x8JRbhpuhhvv53zHVHm3D+bABjWQZYEc+mEFj\nLptVRib1gSk/dabx0BxdXZhW6Qu069UTnrdtpPamHeYac5nrcx0/hnbz0DA9gagu\nO2nvc/H/0CLMWFwJl9s/VfNKbOpt7QxxdVA/vlnXX/bA5RshF0wz9X6aH1nsHH+C\nPoyk66ljaaVtri668Ph8cHI6qyneK3sdvyx3xFt1i9KbGGmOLDWHo2xtVKO77155\nvqj/6+7DfOtuOUzwMXlSPQNfR6VQacktNDExheRiExw/NOflGTi3ucBcuEjJ3BNB\nShRQjM5zAgMBAAECggEAQVAaqaqCpMCOoXtugHiOqrGIejKfmX6KiANPbWFGKJ/R\nP6uI8Hb1ZGeIfEGmA0ROb4NyeGfg/d22HToaKtWl/zJ7ZA+AT1cwhtQev6C1lSDQ\nrupj3HVryGW7m6Dl3aUKEButj0qKrDOKGDM5x0KbHVNjKY0BCSNkO9u+fN37bYWS\nn5L9NaAwWyEQ4gBY9HTMfoKza56mGtRF/UCjAQRm0t2PuT1gWNyEqlkMbYgGBEtW\nGOa6C4/Pm27WytfrrkxqmsjGqQB40LhzsP599tVtVV6/RjCqA5FIXu/CxPgwlf/9\nqlrNAEL0q0C72y1g54JyomS04sjIpVkW2CD0kSQdAQKBgQDaB2tRMwiCErxqbIee\nhA0wYuj3mRJ3cfC+8vWuCOtqdDKXgBT3JJl6c/ZqV6y3YbAJlT3pjPTkVfGoDu+R\nlhd0GEa5OOdRI4jJyjwimUrGuhm0kr9dLvRi39ixcQLSXzo72JT4CILK4Wbqw7je\ntvr/OriV+ZO6yCU709yRd53OgQKBgQC8QYnXE5ANaoHGd7LjPN9yf8AwcythcRsH\n0h/MCeNYiOVPs5y/+HzHfKHRbywsHlLSAb3TnSZUz7OdDcwXyEnBZQzY7i+IQ3ya\nXh2q1hlVuws83stzkukvB/r/C5LQ+/BuJzGnp5uTkdysuOQMR0uvYMy9RK5xFbDb\nJ9AZeNDK8wKBgAm2AOKp+jwI55l54gR+bzPzg9rbV4Y4bfejTKwGu62PJV24F7b2\nS1u35IbSBuBYGoYivpIzdAjjhxLsL2F1pO/H0QaY8Tyc74/FUS5dU4ZMba6sRpe4\n6quourcUiIKkOSzHNcNiZajxpyrXstlAnydVDzmm1xyfo4Dpq85S3JWBAoGANV/L\niewk+njJBJEpad33aEoqHlJ46S6dQFFl7H6dM5vUkA1XkuIL1q9SXcPMXVHXn20Y\n+edjV8ZvoUapJ9EEgE17IAIf/d1MdaPbe3UqR7E5VW/BdSog7NGxayBH5vKXT1PT\nczpFFMjVLS9akNSh875ZLgxL/QnuU6RtDtu/LtsCgYEAw0v0nBDsR/SAv9wQRftc\nsEUhBqFlYeyDGCgT0YAivnz13QGCxoZX5vJ0Cdat8mOQ8GSLQ5OhzkqWczMpmh/n\nr4a+ZNiXWDwcdglgsbeiXg09FdjiqTeV4w5BMrIxMamBoF8w7mKtjzxWLwWTrjDf\nGSM2hn+fnNZz5CGXn68znLs=\n-----END PRIVATE KEY-----\n",
+      "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDDWRTeRb/J9nLE\n7mU666L5OBA7M9EBJD7aDakHfXw50e+R29swgW4jMf7zbHURW52QXCYz/hm8Wm3f\nn14oFs95o9FcQ9m6K9gEM05M4W7X0u/i0UdiFYOmo4m26ZdmuGB8AwmpLzAFwQBC\n4ZBXvVbMhh4ss3ejfJnrGBTfQ4NPOch0CU/yXyEo7uPrEqvqZOnSpFWZNxemUixq\nCUXAYfOVWvWoU06v0YCsdRicCYChB8+3PiARBebpD2sV+CM7G2GXxPU/CrfqArvL\nZBTnTLXN/USm284N/veeGgzrUPZpPTvvALvdKYW+4QGGDEJ2tuLr9xbZvPGjHCXj\npxEvrkdPAgMBAAECggEAEzZYKJIojiboW7jsiNJy+VrLsd7jP97+NXjhdmSfipo8\nmxZJ5Ofd2qVIo0036Eif4vpFIZjslAs6wiMM4hl4N0jmxtG/gKFeQe9/1GzZd219\n/UtC34EpLQLpgO1RYB9jEd9EnHiRGwfDzFAd35s2BbBtGE1gR1pyUt5P8zNTHz/u\nBnrykT7wx1gWCKxQ+2BBa717EZNRGWnTyx+74kASZSERaDH3Vc2Re+bcbRx710Rw\nypr51AbS9Fm6n50vumq3BUwDWDXdwoO2aZIcxD08dG2F915XBkZfNVb3QpPLM/SL\nosevL4I1U34A1Sx8uRFUYCBlsMnEA74wqPwhOonC3QKBgQDtxvaCHWfI8j01jYS6\nz6ueO52g+Tlh67kobPn2unbb60rEFAHFYU09x7z4vMoE1jaDTtG1WjgwTDPly/ZW\n23dwe3//DRHU75g4SZWlRiv6QNmV78vSaHWdmXZVwGeXlMEbJJYiOsa5nA+cEYtD\nWn8ZYEhUaa5+UmH/AdmX1//EMwKBgQDSUa8royPd+KkWS9OUnT8ShBCfadxH0jFi\nUeAu86ZlICUu2Sd5Y5xMhrGjMxNb8td9+UNZ+RYUYQ4pY4NnOoG1LRGPvBT32sMg\na5BDujqzQ4D2qvniZslqtgL0VMCCfI9eHyQpiyKuCrxpmTrhD8jCR2/ao2SqWAHY\nl3WmWxP0dQKBgE1UgeM7MP+3WJTMG7itxYDGnrM1mqXwBd3R41GMvw8y7LPsVc8d\noANRrHGw5HrCOCRoQ+eZGeELR22a8di5s5SPdcc7NutrqLPVqqd/tNnEsX8D5+Pc\nOTQyLrwgwRAZPtxW/8TOHMdMq/7z7bjP+7oDCEL7w9YtcNWAgoXRp8rlAoGAaEaB\nkCQhi1NXGivcKinQdLCvwSnuQlmvjGzFtuGslSTb6p9V1/SQMMzzU9Pl/Eepmda1\nEu3RiacZK2Iga1TxrE89DsOUrdJzviY2b63snqaQUTwyCpMlt9eoHVXL4KY7OtI7\nzrEiL6I5Ci4jqCR4SAK9LWynY2GhAK8PcLxlZ2UCgYEAmesXvs4trLA3BI1hRx4G\nkYd8f1aVXZcv6n6wDhMNMI3vcK2ed1Ndq0IM7lyo7Byis/S1lQQMoYAvS2C2W3tV\nnUzYBW36bc1XQh2xUzUA3wnFxSie0uxo2q4xMAqZU/9T1ydXP78lK5F4CUQ5a00p\n4D2zwVF3ky626dICKyHnAmA=\n-----END PRIVATE KEY-----\n",
     client_email: "googlesheetseditor@linkedinautomation-393307.iam.gserviceaccount.com",
     client_id: "115746319455079936696",
     auth_uri: "https://accounts.google.com/o/oauth2/auth",
@@ -891,6 +412,7 @@ function createJwtAssertion() {
   return sJWT;
 }
 
+"use strict";
 /////////////
 //Pre-start declarations
 /////////////
@@ -914,5 +436,4 @@ loadGoogleSheetsData();
 /////////////
 //Start main
 /////////////
-
 addMainButton();

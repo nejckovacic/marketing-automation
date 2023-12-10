@@ -217,7 +217,7 @@ class People {
               "We found multiple contact with the same name:\nContact: " +
                 fullName +
                 "\nsame as: \n" +
-                possibleMatches[0].name +
+                possibleMatches[0].fullName +
                 "\n" +
                 possibleMatches[0].role +
                 "\n" +
@@ -230,6 +230,7 @@ class People {
             console.log("Contact has been updated.");
             possibleMatches[0].updateID(id);
             element.classList.remove("notice");
+            manuallyColorUserRows();
             return possibleMatches[0];
           } else {
             console.log("Nothing was changed.");
@@ -798,10 +799,11 @@ function readUserInfo(element) {
 
   var location = element.querySelector("._lockup-links-container_sqh8tm");
 
+  console.log(location);
   if (location != null) {
     var location = location.querySelector("div").textContent.trim().split(", ")[location.length - 1];
   } else {
-    location = null;
+    location = "Slovenia";
   }
 
   if (imgUrl.includes("https:")) {
@@ -1275,7 +1277,6 @@ waitForKeyElements("#gsStatus:first", () => {
   waitForKeyElements("section._header_sqh8tm:first", (profileElement) => {
     //read user info from page
     var userData = readUserInfo(profileElement[0]);
-    //checks if user exists (false disables the alert)
     var person = people.findPersonWithNameAndID(userData.fullName, userData.id, profileElement[0]);
 
     if (person != null && !window.location.href.includes("/sales/lists/people/")) {

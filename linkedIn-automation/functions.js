@@ -468,10 +468,11 @@ function readUserInfo(element) {
 
   var location = element.querySelector("._lockup-links-container_sqh8tm");
 
+  console.log(location);
   if (location != null) {
     var location = location.querySelector("div").textContent.trim().split(", ")[location.length - 1];
   } else {
-    location = null;
+    location = "Slovenia";
   }
 
   if (imgUrl.includes("https:")) {

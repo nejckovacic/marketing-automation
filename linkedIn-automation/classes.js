@@ -217,7 +217,7 @@ class People {
               "We found multiple contact with the same name:\nContact: " +
                 fullName +
                 "\nsame as: \n" +
-                possibleMatches[0].name +
+                possibleMatches[0].fullName +
                 "\n" +
                 possibleMatches[0].role +
                 "\n" +
@@ -230,6 +230,7 @@ class People {
             console.log("Contact has been updated.");
             possibleMatches[0].updateID(id);
             element.classList.remove("notice");
+            manuallyColorUserRows();
             return possibleMatches[0];
           } else {
             console.log("Nothing was changed.");

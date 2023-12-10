@@ -30,6 +30,13 @@ body {
   font-size: 14px;
 }
 
+.bottom-left-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
 .custom-button:hover {
   filter: brightness(70%);
 }
