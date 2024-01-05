@@ -208,6 +208,7 @@ class People {
         }
       });
       //check if there are not multiple people with the same name
+      console.log(possibleMatches);
       if (possibleMatches.length == 1) {
         element.scrollIntoView();
         element.classList.add("notice");
