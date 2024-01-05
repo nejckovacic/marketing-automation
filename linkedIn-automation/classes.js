@@ -72,13 +72,25 @@ class Person {
   updateElements(type = "any") {
     for (let i = 0; i < this.elements.length; i++) {
       let currElement = this.elements[i];
-      if (document.body.contains(currElement.element) && currElement.exists == true) {
-        if (currElement.type == "userRow" && (type == "any" || type == "userRow")) {
+      if (
+        document.body.contains(currElement.element) &&
+        currElement.exists == true
+      ) {
+        if (
+          currElement.type == "userRow" &&
+          (type == "any" || type == "userRow")
+        ) {
           updateColor(this, this.elements[i].element);
-        } else if (currElement.type == "userProfile" && (type == "any" || type == "userProfile")) {
+        } else if (
+          currElement.type == "userProfile" &&
+          (type == "any" || type == "userProfile")
+        ) {
           updateColor(this, this.elements[i].element);
           addStatsForExisting(this, currElement.element, false);
-        } else if (currElement.type == "userChatProfile" && (type == "any" || type == "userChatProfile")) {
+        } else if (
+          currElement.type == "userChatProfile" &&
+          (type == "any" || type == "userChatProfile")
+        ) {
           updateColor(this, this.elements[i].element);
           addStatsForExisting(this, currElement.element);
           addButtonsForExisting(this);
@@ -191,7 +203,10 @@ class People {
   findPersonWithNameAndID(fullName, id, element) {
     var person;
     this.people.forEach((p) => {
-      if (p.fullName == fullName && (p.profileID == id || p.profileID == "noID")) {
+      if (
+        p.fullName == fullName &&
+        (p.profileID == id || p.profileID == "noID")
+      ) {
         person = p;
       }
     });
@@ -208,44 +223,25 @@ class People {
         }
       });
       //check if there are not multiple people with the same name
-      console.log(possibleMatches);
+      console.log("Possible matches: ", possibleMatches);
       if (possibleMatches.length == 1) {
-        element.scrollIntoView();
-        element.classList.add("notice");
-        setTimeout(() => {
-          if (
-            confirm(
-              "We found multiple contact with the same name:\nContact: " +
-                fullName +
-                "\nsame as: \n" +
-                possibleMatches[0].fullName +
-                "\n" +
-                possibleMatches[0].role +
-                "\n" +
-                possibleMatches[0].location +
-                "\n" +
-                possibleMatches[0].position +
-                "\n\n Is this the same person?"
-            )
-          ) {
-            console.log("Contact has been updated.");
-            possibleMatches[0].updateID(id);
-            element.classList.remove("notice");
-            manuallyColorUserRows();
-            return possibleMatches[0];
-          } else {
-            console.log("Nothing was changed.");
-            element.classList.remove("notice");
-          }
-        }, 0);
+        console.log("Only one match found. Contact has been updated.");
+        possibleMatches[0].updateID(id);
+        manuallyColorUserRows();
+        return possibleMatches[0];
       } else if (possibleMatches.length > 1) {
         console.log("There are multiple matches for name " + fullName);
         if (alert) {
-          sendAlert("There are multiple matches for name " + fullName, "alert" + fullName);
+          sendAlert(
+            "There are multiple matches for name " + fullName,
+            "alert" + fullName
+          );
         }
         return null;
       }
-      console.log(fullName + " with ID: " + id + " has not been found in the system.");
+      console.log(
+        fullName + " with ID: " + id + " has not been found in the system."
+      );
       return null;
     }
   }
