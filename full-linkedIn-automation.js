@@ -1199,6 +1199,8 @@ function updateAndDisplaySheetsStatus(area, number) {
 
 "use strict";
 
+console.log("Loading custom script - marketing automation...")
+
 // Google Sheets document and cell range
 var serviceAccount;
 var areas = {
